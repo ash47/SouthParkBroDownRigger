@@ -12,7 +12,8 @@ var postData = {
 };
 
 // Max number of threads to use to vote
-var maxThreads = 50;
+var hardCap = 15;
+var maxThreads = hardCap;
 
 // Converts KV pairs into a URL encoded form data
 function formFormat(data) {
@@ -105,6 +106,7 @@ function spamVotes() {
 
         // This was a success, increase max threads
         maxThreads += 0.1;
+        if(maxThreads > hardCap) maxThreads = hardCap;
 
         // Add another vote
         spamVotes();
