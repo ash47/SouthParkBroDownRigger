@@ -12,8 +12,8 @@ var postData = {
 };
 
 // Max number of threads to use to vote
-var hardCap = 15;
-var maxThreads = hardCap;
+var hardCap = 50;     // Cap of threads
+var maxThreads = 100;   // Starting number of threads
 
 // Converts KV pairs into a URL encoded form data
 function formFormat(data) {
@@ -51,7 +51,7 @@ function doPost(host, path, data, callback) {
         formData = formFormat(data);
         options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         options.headers['Content-Length'] = formData.length;
-        options.headers['Connection'] = 'Keep-Alive';
+        //options.headers['Connection'] = 'Keep-Alive';
     }
 
     // Create the request
@@ -83,14 +83,24 @@ function onVoteError() {
     spamVotes();
 }
 
+function getAllData(res, callback) {
+    var buffer;
+
+    buffer = [];
+    res.on('data', function(chunk) {
+        return buffer.push(chunk);
+    });
+
+    res.on('end', function() {
+        callback(buffer.join(''));
+    });
+};
+
 var totalVotes = 0;
 function spamVotes() {
     if(activeThreads >= maxThreads) return;
 
     activeThreads++;
-    if(activeThreads < maxThreads) {
-        spamVotes();
-    }
 
     doPost(hostName, postPath, postData, function(res) {
         if(res.statusCode == 200) {
@@ -101,15 +111,18 @@ function spamVotes() {
             return;
         }
 
-        // This thread is no longer active
-        activeThreads--;
+        getAllData(res, function(data) {
+            // This thread is no longer active
+            activeThreads--;
 
-        // This was a success, increase max threads
-        maxThreads += 0.1;
-        if(maxThreads > hardCap) maxThreads = hardCap;
+            // This was a success, increase max threads
+            maxThreads += 0.1;
+            if(maxThreads > hardCap) maxThreads = hardCap;
 
-        // Add another vote
-        spamVotes();
+            // Add another vote
+            spamVotes();
+            spamVotes();
+        });
     });
 }
 
