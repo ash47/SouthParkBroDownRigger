@@ -3,13 +3,26 @@ var http = require('http');
 // Voting info
 var hostName = 'southpark.cc.com';
 var postPath = '/feeds/blog/vote';
-var postData = {
+var postData = [{
     action: 'polls',
     view: 'process',
     poll_id: '51',
     poll_51: '102',
     poll_51_nonce: 'ce0ecfe4de'
-};
+}, {
+    action: 'polls',
+    view: 'process',
+    poll_id: '59',
+    poll_59: '118',
+    poll_59_nonce: '096e6fd69c'
+}, {
+    action: 'polls',
+    view: 'process',
+    poll_id: '54',
+    poll_54: '108',
+    poll_54_nonce: 'c344d72140'
+}];
+var postNum = 0;
 
 // Max number of threads to use to vote
 var hardCap = 250;     // Cap of threads
@@ -102,7 +115,11 @@ function spamVotes() {
 
     activeThreads++;
 
-    doPost(hostName, postPath, postData, function(res) {
+    // Cycle between the posts
+    var ourPostData = postData[postNum];
+    if(++postNum >= postData.length) postNum = 0;
+
+    doPost(hostName, postPath, ourPostData, function(res) {
         if(res.statusCode == 200) {
             console.log('Vote added! (' + (++totalVotes) + ' votes so far) (' + activeThreads + '/' + Math.ceil(maxThreads) + ' connections)');
         } else {
