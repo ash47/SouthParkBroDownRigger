@@ -59,7 +59,7 @@ function doPost(host, path, data, callback) {
 
     // Handle disconnect error
     req.on('error', function(error) {
-        console.log('HTTP error occurred: ' + error.message + ' (' + activeThreads + '/' + maxThreads + ')');
+        console.log('HTTP error occurred: ' + error.message + ' (' + activeThreads + '/' + Math.ceil(maxThreads) + ' connections)');
         onVoteError();
     });
 
@@ -104,7 +104,7 @@ function spamVotes() {
 
     doPost(hostName, postPath, postData, function(res) {
         if(res.statusCode == 200) {
-            console.log('Vote added! (' + (++totalVotes) + ' votes so far) (' + activeThreads + '/' + maxThreads + ')');
+            console.log('Vote added! (' + (++totalVotes) + ' votes so far) (' + activeThreads + '/' + Math.ceil(maxThreads) + ' connections)');
         } else {
             console.log('Vote failed!');
             onVoteError();
