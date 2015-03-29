@@ -113,9 +113,9 @@ function spamVotes() {
 
     doPost(hostName, postPath, ourPostData, function(res) {
         if(res.statusCode == 200) {
-            console.log('Vote added! (' + (++totalVotes) + ' votes so far) (' + activeThreads + '/' + Math.ceil(maxThreads) + ' connections)');
+            //console.log('Vote added! (' + (++totalVotes) + ' votes so far) (' + activeThreads + '/' + Math.ceil(maxThreads) + ' connections)');
         } else {
-            console.log('Vote failed!');
+            //console.log('Vote failed!');
             onVoteError();
             return;
         }
