@@ -96,17 +96,9 @@ function onVoteError() {
     spamVotes();
 }
 
-function getAllData(res, callback) {
-    var buffer;
-
-    buffer = [];
-    res.on('data', function(chunk) {
-        return buffer.push(chunk);
-    });
-
-    res.on('end', function() {
-        callback(buffer.join(''));
-    });
+function skipAllData(res, callback) {
+    res.on('data', function(){});
+    res.on('end', callback);
 };
 
 var totalVotes = 0;
@@ -128,7 +120,7 @@ function spamVotes() {
             return;
         }
 
-        getAllData(res, function(data) {
+        skipAllData(res, function() {
             // This thread is no longer active
             activeThreads--;
 
